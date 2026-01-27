@@ -11,30 +11,29 @@ environment with minimum hassle💢 for maximum productivity📈.
 
 ### usage
 
-- terminal based
+- terminal based
 - no graphical user interface (no need of that)
 
 ### tooling
 
-- POSIX compliant shell 󱆃
-- rev 
-- cut 
-- docker  (either native or Docker Desktop or Orbstack)
+- POSIX compliant shell
+- rev
+- cut
+- docker (either native or Docker Desktop or Orbstack)
   - buildx plugin
   - compose plugin
-- make 
-- command 
-- GNU sed 
-- (optional) less 
+- make
+- command
+- GNU sed
+- (optional) less
 
 Generally speaking, a recent linux distribution or MacOS should do the job.
 For MacOS, ensure to install `gsed` using Homebrew for instance.
 
 ### hardware
 
-- some giga-bytes of free storage 󰋊 to build and use the stuff
-- ideally, a good rig with some processing  power and RAM  (accelerate
-  builds)
+- some giga-bytes of free storage to build and use the stuff
+- ideally, a good rig with some processing power and RAM (accelerate builds)
 
 ## how to use?
 
