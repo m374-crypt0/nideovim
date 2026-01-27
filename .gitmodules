@@ -1,4 +1,3 @@
 [submodule "scripts/lib/funcshional"]
 	path = scripts/lib/funcshional
-	url = https://github.com/MetaBarj0/funcshional.git
-	branch = main
+	url = https://github.com/m374-crypt0/funcshional.git
