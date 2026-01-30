@@ -1,6 +1,6 @@
 require("utils.reloadConfig")
 
-vim.cmd("colorscheme catppuccin")
+vim.cmd("colorscheme catppuccin-mocha")
 
 vim.opt.background = "dark"
 vim.opt.hidden = true
