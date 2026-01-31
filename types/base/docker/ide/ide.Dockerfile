@@ -17,7 +17,7 @@ RUN \
   apt-get update \
   && apt-get install -y --no-install-recommends \
   man-db make git git-man git-doc ca-certificates wget lsb-release gnupg curl \
-  bc strace inotify-tools
+  bc strace inotify-tools libicu76
 
 FROM core_packages AS install_docker_cli
 # docker installation for debian
