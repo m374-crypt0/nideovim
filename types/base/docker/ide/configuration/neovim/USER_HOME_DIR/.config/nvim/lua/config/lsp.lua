@@ -47,3 +47,5 @@ require("conform").setup({
 		},
 	},
 })
+
+require("render-markdown").setup({ latex = { enabled = false } })
