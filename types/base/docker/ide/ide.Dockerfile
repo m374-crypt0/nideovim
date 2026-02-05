@@ -44,19 +44,33 @@ RUN \
   && apt-get install -y --no-install-recommends \
   docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-FROM install_docker_cli AS llvm
+# WARNING: This is a workaround to remove as soon as the root issue (external to nideovim) is fixed.
+# see [this llvm issue](https://github.com/llvm/llvm-project/issues/179148)
+FROM install_docker_cli AS temporary_pre_llvm_relax_security_workaround
+RUN <<EOF
+  mkdir -p /etc/crypto-policies/back-ends/ &&
+  cat <<EOI > /etc/crypto-policies/back-ends/sequoia.config
+[hash_algorithms]
+sha1 = "always"
+
+[asymmetric_algorithms]
+rsa1024 = "always"
+EOI
+EOF
+
+FROM temporary_pre_llvm_relax_security_workaround AS llvm
 ARG LLVM_VERSION=20
 RUN wget --quiet https://apt.llvm.org/llvm.sh \
   && chmod +x llvm.sh
 RUN <<EOF
-  ./llvm.sh ${LLVM_VERSION} all
-  update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${LLVM_VERSION} 100
-  update-alternatives --install /usr/bin/cxx cxx /usr/bin/clang++-${LLVM_VERSION} 100
-  update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM_VERSION} 100
-  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM_VERSION} 100
-  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-${LLVM_VERSION} 100
-  update-alternatives --install /usr/bin/ld ld /usr/bin/lld-${LLVM_VERSION} 100
-  update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${LLVM_VERSION} 100
+  ./llvm.sh ${LLVM_VERSION} all &&
+  update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${LLVM_VERSION} 100 &&
+  update-alternatives --install /usr/bin/cxx cxx /usr/bin/clang++-${LLVM_VERSION} 100 &&
+  update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM_VERSION} 100 &&
+  update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM_VERSION} 100 &&
+  update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-${LLVM_VERSION} 100 &&
+  update-alternatives --install /usr/bin/ld ld /usr/bin/lld-${LLVM_VERSION} 100 &&
+  update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${LLVM_VERSION} 100 &&
   update-alternatives --install /usr/bin/lldb-dap lldb-dap /usr/bin/lldb-dap-${LLVM_VERSION} 100
 EOF
 
