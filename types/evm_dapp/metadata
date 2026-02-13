@@ -5,7 +5,7 @@
 #       by using base as ancestor as you can leverage all the logic of the base
 #       type in your custom type. You can see this in effect by looking at the
 #       type's Makefile.
-TYPE_ANCESTOR=next_react
+TYPE_ANCESTOR=web_app
 
 # NOTE: Mandatory variable. Provides the type's description printed with make
 #       list-types command. You should provide a clear description of your type

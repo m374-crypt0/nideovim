@@ -1,0 +1,16 @@
+# NOTE: This is where the overrides take place.
+services:
+  ide:
+    ports:
+      - name: backend_dev
+        target: ${BACKEND_EXPOSED_PORT:-3000}
+        host_ip: 0.0.0.0
+        protocol: tcp
+        published: "${BACKEND_EXPOSED_PORT:-3000}"
+        mode: host
+      - name: frontend_dev
+        target: ${FRONTEND_EXPOSED_PORT:-8080}
+        host_ip: 0.0.0.0
+        protocol: tcp
+        published: "${FRONTEND_EXPOSED_PORT:-8080}"
+        mode: host

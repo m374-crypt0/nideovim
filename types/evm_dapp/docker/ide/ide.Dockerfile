@@ -30,7 +30,8 @@ RUN FOUNDRY_DIR=${USER_HOME_DIR}/.foundry ${USER_HOME_DIR}/.foundry/bin/foundryu
 ENV FOUNDRY_DIR=${USER_HOME_DIR}/.foundry
 ENV PATH=${PATH}:${FOUNDRY_DIR}/bin
 
-# The last build stage must named 'end'
+# NOTE: The last build stage must named 'end'. Take a look in the build script
+#       attached to the build make target to get more insights
 FROM install_foundry AS end
 ARG USER_NAME=root
 USER ${USER_NAME}
