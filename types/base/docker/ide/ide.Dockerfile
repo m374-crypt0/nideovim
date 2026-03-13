@@ -356,8 +356,18 @@ RUN curl -L \
   https://raw.githubusercontent.com/m374-crypt0/rake/refs/heads/main/.rake/scripts/install \
   | bash
 
+FROM install_rakeup AS install_claude_code
+ARG USER_HOME_DIR=/root
+ARG USER_NAME=root
+USER ${USER_NAME}
+WORKDIR ${USER_HOME_DIR}
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -fsSL \
+  https://claude.ai/install.sh \
+  | bash
+
 # `end` stage name is important as it is the default target stage for a build
-FROM install_rakeup AS end
+FROM install_claude_code AS end
 ARG INSTANCE_ID=0
 ARG PROJECT_NAME=nideovim
 ARG USER_HOME_DIR=/root
@@ -385,7 +395,7 @@ COPY --from=install_configuration \
   ${USER_HOME_DIR}/.config/ .config/
 # Ensuring correct ownership for those directories especially for rootless
 # configurations
-RUN mkdir -p .ssh .local
+RUN mkdir -p .ssh .local .claude
 ENV NODEJS_INSTALL_DIR=${USER_HOME_DIR}/.nodejs
 ENV NPM_PREFIX_DIR=${USER_HOME_DIR}/.npm-prefix
 ENV NEOVIM_INSTALL_DIR=${USER_HOME_DIR}/.neovim
