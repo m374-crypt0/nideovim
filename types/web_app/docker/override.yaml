@@ -1,6 +1,9 @@
 # NOTE: This is where the overrides take place.
 services:
   ide:
+    environment:
+      - BACKEND_EXPOSED_PORT
+      - FRONTEND_EXPOSED_PORT
     ports:
       - name: backend_dev
         target: ${BACKEND_EXPOSED_PORT:-3000}
