@@ -12,9 +12,23 @@ export_user_info() {
   fi
 }
 
+export_docker_socket_path() {
+  local context && context="$(docker context show)"
+  local endpoint &&
+    endpoint="$(
+      docker context list --format json 2>/dev/null |
+        jq "select(.Name == $context).DockerEndpoint"
+    )"
+
+  local path && path="$(echo "$endpoint" | sed -E 's/^"//;s/"$//;s%unix://%%')"
+
+  export DOCKER_SOCKET_PATH="$path"
+}
+
 export_variables_for_compose() {
   export_compose_project_name &&
-    export_user_info
+    export_user_info &&
+    export_docker_socket_path
 }
 
 touch_external_custom_compose_override_files_for_all_ancestors() {
