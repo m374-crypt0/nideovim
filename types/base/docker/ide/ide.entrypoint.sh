@@ -19,8 +19,13 @@ run_live_loop() {
   done
 }
 
+fix_docker_group_id() {
+  chown root:docker /var/run/docker.sock
+}
+
 main() {
   setup_ssh_authentication &&
+    fix_docker_group_id &&
     run_live_loop
 }
 

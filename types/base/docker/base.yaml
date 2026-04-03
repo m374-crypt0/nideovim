@@ -54,7 +54,7 @@ services:
       - type: bind
         source: ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}
         target: /var/run/docker.sock
-        read_only: true
+        read_only: false
       - type: volume
         source: user_config
         target: ${USER_HOME_DIR:-/root}/.config
