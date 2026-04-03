@@ -7,10 +7,11 @@ setup_ssh_authentication() {
   chmod 0755 .ssh
 
   cat /run/secrets/ssh_public_key_file >.ssh/id.pub
-  chmod 0444 .ssh/id.pub
+  sudo chmod 0444 .ssh/id.pub
 
-  cat /run/secrets/ssh_secret_key_file >.ssh/id
-  chmod 0400 .ssh/id
+  sudo sh -c 'cat /run/secrets/ssh_secret_key_file >.ssh/id'
+  sudo chown ${USER_NAME}:${USER_NAME} .ssh/id
+  sudo chmod 0400 .ssh/id
 }
 
 run_live_loop() {
@@ -20,7 +21,7 @@ run_live_loop() {
 }
 
 fix_docker_group_id() {
-  chown root:docker /var/run/docker.sock
+  sudo chown root:docker /var/run/docker.sock
 }
 
 main() {

@@ -17,7 +17,7 @@ export_docker_socket_path() {
   local endpoint &&
     endpoint="$(
       docker context list --format json 2>/dev/null |
-        jq "select(.Name == $context).DockerEndpoint"
+        jq "select(.Name == \"$context\").DockerEndpoint"
     )"
 
   local path && path="$(echo "$endpoint" | sed -E 's/^"//;s/"$//;s%unix://%%')"

@@ -20,6 +20,7 @@ services:
       - PROJECT_NAME
       - TERM=xterm-256color
       - USER_HOME_DIR
+      - USER_NAME
       - VOLUME_DIR_NAME
       - WORKSPACE_VOLUME_ID=${COMPOSE_PROJECT_NAME}_workspace
     hostname: ${CONTAINER_HOSTNAME:-nIDEovim}
