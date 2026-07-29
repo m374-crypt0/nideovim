@@ -22,11 +22,11 @@ USER ${USER_NAME}
 WORKDIR ${USER_HOME_DIR}
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -L \
-  https://raw.githubusercontent.com/noir-lang/noirup/refs/heads/main/install \
+  curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install \
   | bash
 ENV NARGO_BIN_DIR=${USER_HOME_DIR}/.nargo/bin
 ENV PATH=${PATH}:${NARGO_BIN_DIR}
-RUN noirup
+RUN noirup -v 1.0.0-beta.22
 
 FROM install_noir AS install_barretenberg
 ARG USER_HOME_DIR=/root
