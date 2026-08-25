@@ -22,10 +22,18 @@ services:
         protocol: tcp
         published: "${OLLAMA_PORT:-11434}"
         mode: host
+      - name: ROCmPFX_server
+        target: ${ROCMPFX_SERVER_EXPOSED_PORT:-8080}
+        host_ip: 0.0.0.0
+        protocol: tcp
+        published: "${ROCMPFX_SERVER_EXPOSED_PORT:-8080}"
+        mode: host
     post_start:
       - command: chown ${USER_NAME:-root}:${USER_NAME:-root} ${USER_HOME_DIR:-/root}/.ollama
         user: root
     volumes:
       - ollama_data:${USER_HOME_DIR}/.ollama
+      - huggingface_cache:${USER_HOME_DIR}/.cache/huggingface
 volumes:
   ollama_data:
+  huggingface_cache:

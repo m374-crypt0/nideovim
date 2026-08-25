@@ -56,18 +56,24 @@ RUN cmake -B build . -DOLLAMA_LLAMA_BACKENDS="vulkan" && \
   cmake --build build --config Release --parallel "$(nproc)"
 RUN go build -tags full -o ${USER_HOME_DIR}/ollama/dist .
 
-FROM install_build_dependencies AS build_llama_cpp
+FROM install_build_dependencies AS build_strix_llama_cpp
 ARG USER_HOME_DIR=/root
 WORKDIR ${USER_HOME_DIR}
-RUN git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llama.cpp
-WORKDIR ${USER_HOME_DIR}/llama.cpp
+RUN git clone --depth 1 https://github.com/charlie12345/ROCmFPX.git ROCmFPX
+WORKDIR ${USER_HOME_DIR}/ROCmFPX
 RUN cmake -B build \
+  -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_SHARED_LIBS=OFF \
   -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-  -DGGML_STATIC=ON \
   -DGGML_VULKAN=ON \
-  -DCMAKE_BUILD_TYPE=Release \
-  && cmake --build build --config Release -j $(nproc) --target llama-gguf-split
+  -DLLAMA_BUILD_SERVER=ON \
+  -DLLAMA_BUILD_WEBUI=ON \
+  -DLLAMA_USE_PREBUILT_WEBUI=OFF \
+  -DLLAMA_BUILD_TESTS=OFF \
+  -DGGML_BUILD_TESTS=OFF \
+  && cmake --build build -j "$(nproc)" --target \
+  llama-cli \
+  llama-server
 
 FROM ${BASE_IMAGE} AS install_binaries
 ARG RENDER_GROUP_ID=0
@@ -91,15 +97,19 @@ USER ${USER_NAME}
 COPY \
   --from=build_ollama \
   --chown=${USER_NAME}:${USER_NAME} \
-  ${USER_HOME_DIR}/ollama/dist ${USER_HOME_DIR}/.local/bin/ollama
+  ${USER_HOME_DIR}/ollama/llama/server/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/llama-server
 COPY \
   --from=build_ollama \
   --chown=${USER_NAME}:${USER_NAME} \
-  ${USER_HOME_DIR}/ollama/llama/server/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/llama-server
+  ${USER_HOME_DIR}/ollama/dist ${USER_HOME_DIR}/.local/bin/ollama
 COPY \
-  --from=build_llama_cpp \
+  --from=build_strix_llama_cpp \
   --chown=${USER_NAME}:${USER_NAME} \
-  ${USER_HOME_DIR}/llama.cpp/build/bin/llama-gguf-split ${USER_HOME_DIR}/.local/bin/llama-gguf-split
+  ${USER_HOME_DIR}/ROCmFPX/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/ROCmPFX-llama-server
+COPY \
+  --from=build_strix_llama_cpp \
+  --chown=${USER_NAME}:${USER_NAME} \
+  ${USER_HOME_DIR}/ROCmFPX/build/bin/llama-cli ${USER_HOME_DIR}/.local/bin/ROCmPFX-llama-cli
 ENV PATH=${USER_HOME_DIR}/.local/bin:${PATH}
 WORKDIR ${USER_HOME_DIR}
 
