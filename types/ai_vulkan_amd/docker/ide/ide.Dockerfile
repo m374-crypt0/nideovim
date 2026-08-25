@@ -21,7 +21,7 @@ RUN go install golang.org/dl/go1.24.13@latest
 WORKDIR ${USER_HOME_DIR}/go/bin
 RUN ./go1.24.13 download
 
-FROM ${BASE_IMAGE} AS build_ollama
+FROM ${BASE_IMAGE} AS install_build_dependencies
 ARG USER_HOME_DIR=/root
 ARG USER_NAME=root
 USER root
@@ -40,6 +40,10 @@ COPY \
   --chown=${USER_NAME}:${USER_NAME} \
   ${USER_HOME_DIR}/sdk/go1.24.13/ ${USER_HOME_DIR}/sdk/go1.24.13/
 ENV PATH=${USER_HOME_DIR}/sdk/go1.24.13/bin/:${PATH}
+
+FROM install_build_dependencies AS build_ollama
+ARG USER_HOME_DIR=/root
+WORKDIR ${USER_HOME_DIR}
 RUN git clone --depth 1 https://github.com/ollama/ollama.git ollama
 WORKDIR ${USER_HOME_DIR}/ollama
 RUN git submodule update --init --recursive
@@ -52,7 +56,20 @@ RUN cmake -B build . -DOLLAMA_LLAMA_BACKENDS="vulkan" && \
   cmake --build build --config Release --parallel "$(nproc)"
 RUN go build -tags full -o ${USER_HOME_DIR}/ollama/dist .
 
-FROM ${BASE_IMAGE} AS install_ollama
+FROM install_build_dependencies AS build_llama_cpp
+ARG USER_HOME_DIR=/root
+WORKDIR ${USER_HOME_DIR}
+RUN git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llama.cpp
+WORKDIR ${USER_HOME_DIR}/llama.cpp
+RUN cmake -B build \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DGGML_STATIC=ON \
+  -DGGML_VULKAN=ON \
+  -DCMAKE_BUILD_TYPE=Release \
+  && cmake --build build --config Release -j $(nproc) --target llama-gguf-split
+
+FROM ${BASE_IMAGE} AS install_binaries
 ARG RENDER_GROUP_ID=0
 ARG USER_HOME_DIR=/root
 ARG USER_NAME=root
@@ -79,10 +96,14 @@ COPY \
   --from=build_ollama \
   --chown=${USER_NAME}:${USER_NAME} \
   ${USER_HOME_DIR}/ollama/llama/server/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/llama-server
+COPY \
+  --from=build_llama_cpp \
+  --chown=${USER_NAME}:${USER_NAME} \
+  ${USER_HOME_DIR}/llama.cpp/build/bin/llama-gguf-split ${USER_HOME_DIR}/.local/bin/llama-gguf-split
 ENV PATH=${USER_HOME_DIR}/.local/bin:${PATH}
 WORKDIR ${USER_HOME_DIR}
 
-FROM install_ollama AS install_hf_cli
+FROM install_binaries AS install_hf_cli
 ARG USER_HOME_DIR=/root
 ARG USER_NAME=root
 WORKDIR ${USER_HOME_DIR}
