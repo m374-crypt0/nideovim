@@ -42,6 +42,12 @@ COPY \
 ENV PATH=${USER_HOME_DIR}/sdk/go1.24.13/bin/:${PATH}
 RUN git clone --depth 1 https://github.com/ollama/ollama.git ollama
 WORKDIR ${USER_HOME_DIR}/ollama
+RUN git submodule update --init --recursive
+RUN cmake -S llama/server -B llama/server/build \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DGGML_VULKAN=ON \
+  && cmake --build llama/server/build --config Release --parallel "$(nproc)" --target llama-server
 RUN cmake -B build . -DOLLAMA_LLAMA_BACKENDS="vulkan" && \
   cmake --build build --parallel "$(nproc)"
 RUN go build -tags full -o ${USER_HOME_DIR}/ollama/dist .
@@ -71,5 +77,9 @@ COPY \
   --from=build_ollama \
   --chown=${USER_NAME}:${USER_NAME} \
   ${USER_HOME_DIR}/ollama/dist ${USER_HOME_DIR}/.local/bin/ollama
+COPY \
+  --from=build_ollama \
+  --chown=${USER_NAME}:${USER_NAME} \
+  ${USER_HOME_DIR}/ollama/llama/server/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/llama-server
 ENV PATH=${USER_HOME_DIR}/.local/bin:${PATH}
 WORKDIR ${USER_HOME_DIR}
