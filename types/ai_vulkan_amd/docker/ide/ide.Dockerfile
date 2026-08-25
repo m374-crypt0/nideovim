@@ -49,7 +49,7 @@ RUN cmake -S llama/server -B llama/server/build \
   -DGGML_VULKAN=ON \
   && cmake --build llama/server/build --config Release --parallel "$(nproc)" --target llama-server
 RUN cmake -B build . -DOLLAMA_LLAMA_BACKENDS="vulkan" && \
-  cmake --build build --parallel "$(nproc)"
+  cmake --build build --config Release --parallel "$(nproc)"
 RUN go build -tags full -o ${USER_HOME_DIR}/ollama/dist .
 
 FROM ${BASE_IMAGE} AS install_ollama
