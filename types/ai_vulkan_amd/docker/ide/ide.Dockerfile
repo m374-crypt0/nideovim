@@ -52,9 +52,7 @@ RUN cmake -B build . -DOLLAMA_LLAMA_BACKENDS="vulkan" && \
   cmake --build build --parallel "$(nproc)"
 RUN go build -tags full -o ${USER_HOME_DIR}/ollama/dist .
 
-# NOTE: The last build stage must named 'end'. Take a look in the build script
-#       attached to the build make target to get more insights
-FROM ${BASE_IMAGE} AS end
+FROM ${BASE_IMAGE} AS install_ollama
 ARG RENDER_GROUP_ID=0
 ARG USER_HOME_DIR=/root
 ARG USER_NAME=root
@@ -83,3 +81,14 @@ COPY \
   ${USER_HOME_DIR}/ollama/llama/server/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/llama-server
 ENV PATH=${USER_HOME_DIR}/.local/bin:${PATH}
 WORKDIR ${USER_HOME_DIR}
+
+FROM install_ollama AS install_hf_cli
+ARG USER_HOME_DIR=/root
+ARG USER_NAME=root
+WORKDIR ${USER_HOME_DIR}
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -LsSf https://hf.co/cli/install.sh | bash
+
+# NOTE: The last build stage must named 'end'. Take a look in the build script
+#       attached to the build make target to get more insights
+FROM install_hf_cli AS end
