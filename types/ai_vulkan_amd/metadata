@@ -11,19 +11,12 @@ TYPE_ANCESTOR=base
 #       list-types command. You should provide a clear description of your type
 #       here to help user choosing it for his project.
 TYPE_INFO=$(cat <<EOF
-This \`type\` has everything the \`base type\` provides plus all facilities to
-run a modern local inference setup.
-This one is quite specific, using \`vulkan\` as backend and specifically built
-for AMD Strix Halo architecture (AMD Ryzen AI PRO 395+ with 128GB of unified
-memory).
-In that regard, it contains a tip ollama build, and a ROCmPFX llama_server build
-to run models specifically designed for this platform.
-To use this local inference, raw llama_cli is an option but \`aider\` as well as
-\`OpenWebUI\` are also provided alternatives.
-This setup is also RAG capable for documents, large codebase and prompt history
-vector indexing.
-For model management, the hugging face cli is also installed and its cache is
-persisted on a volume
+AMD Strix Halo optimized local AI inference environment (Ryzen AI PRO 395+, 128GB unified memory).
+
+Features:
+- Vulkan backend with ROCmPFX llama_server and optimized Ollama
+- Multiple interfaces: llama_cli, Aider, OpenWebUI
+- RAG support for documents, codebases, and prompt history
+- Hugging Face CLI with persistent model cache
 EOF
 )
-
