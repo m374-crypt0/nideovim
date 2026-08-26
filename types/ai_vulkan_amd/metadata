@@ -11,7 +11,8 @@ TYPE_ANCESTOR=base
 #       list-types command. You should provide a clear description of your type
 #       here to help user choosing it for his project.
 TYPE_INFO=$(cat <<EOF
-AMD Strix Halo optimized local AI inference environment (Ryzen AI PRO 395+, 128GB unified memory).
+AMD Strix Halo optimized local AI inference environment (Ryzen AI PRO 395+, 128GB
+unified memory).
 
 Features:
 - Vulkan backend with ROCmPFX llama_server and optimized Ollama

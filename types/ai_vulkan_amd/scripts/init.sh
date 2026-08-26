@@ -28,7 +28,8 @@ EOF
 #       your instance
 interactive_init_type_sections() {
   prompt_ollama_port_description &&
-    prompt_rocmpfx_port_description
+    prompt_rocmpfx_server_port_description &&
+    prompt_rag_server_port_description
 }
 
 write_ollama_port_description() {
@@ -38,10 +39,17 @@ default: $(get_default_value_for OLLAMA_PORT)
 EOF
 }
 
-write_rocmpfx_port_description() {
+write_rocmpfx_server_port_description() {
   cat <<EOF
 The port used by the ROCmPFX build of llama_server.
 default: $(get_default_value_for ROCMPFX_SERVER_PORT)
+EOF
+}
+
+write_rag_server_port_description() {
+  cat <<EOF
+The port used by the ROCmPFX build of llama_server for the RAG.
+default: $(get_default_value_for RAG_SERVER_PORT)
 EOF
 }
 
@@ -58,14 +66,27 @@ prompt_ollama_port_description() {
   echo
 }
 
-prompt_rocmpfx_port_description() {
-  write_rocmpfx_port_description
+prompt_rocmpfx_server_port_description() {
+  write_rocmpfx_server_port_description
   echo
 
   read -e -r -p "[${ROCMPFX_SERVER_PORT}]: " rocmpfx_server_port
 
   if [ -n "${rocmpfx_server_port}" ]; then
     ROCMPFX_SERVER_PORT="${rocmpfx_server_port}"
+  fi
+
+  echo
+}
+
+prompt_rag_server_port_description() {
+  write_rag_server_port_description
+  echo
+
+  read -e -r -p "[${RAG_SERVER_PORT}]: " rag_server_port
+
+  if [ -n "${rag_server_port}" ]; then
+    RAG_SERVER_PORT="${rag_server_port}"
   fi
 
   echo
