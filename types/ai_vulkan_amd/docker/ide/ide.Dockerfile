@@ -120,6 +120,13 @@ WORKDIR ${USER_HOME_DIR}
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -LsSf https://hf.co/cli/install.sh | bash
 
+FROM install_hf_cli AS install_aider
+ARG USER_HOME_DIR=/root
+ARG USER_NAME=root
+WORKDIR ${USER_HOME_DIR}
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -LsSf https://aider.chat/install.sh | sh
+
 # NOTE: The last build stage must named 'end'. Take a look in the build script
 #       attached to the build make target to get more insights
-FROM install_hf_cli AS end
+FROM install_aider AS end
