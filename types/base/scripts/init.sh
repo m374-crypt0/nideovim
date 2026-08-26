@@ -248,28 +248,6 @@ SSH_SECRET_KEY_FILE ?= ${SSH_SECRET_KEY_FILE}
 EOF
 }
 
-write_anthropic_api_key_description() {
-  cat <<EOF
-Your anthropic API key to integrate your neovim workflow with Claude thanks
-to the Claude plugin (https://github.com/pasky/claude.vim)
-You will need to explicitely setup an API key here.
-Keep in mind it is a sensitive information (you may deal with real money).
-default: $(get_default_value_for ANTHROPIC_API_KEY)
-EOF
-}
-
-write_ai_integration() {
-  cat <<EOF
-################################################################################
-# AI INTEGRATION
-################################################################################
-
-$(write_anthropic_api_key_description | comment)
-ANTHROPIC_API_KEY ?= ${ANTHROPIC_API_KEY}
-
-EOF
-}
-
 write_external_custom_compose_override_file_description() {
   cat <<EOF
 The path to an override compose file located anywhere on your filesystem.
@@ -320,7 +298,6 @@ write_env_file() {
     and_then write_project_properties |
     and_then write_ide_tooling |
     and_then write_authentication |
-    and_then write_ai_integration |
     and_then write_external_custom_compose_override_file |
     and_then write_type_section_items |
     unlift >"$output_file_path"
@@ -475,19 +452,6 @@ prompt_authentication() {
     prompt_ssh_secret_key
 }
 
-prompt_anthropic_api_key() {
-  write_anthropic_api_key_description
-  echo
-
-  read -e -r -p "[${ANTHROPIC_API_KEY}]: " anthropic_api_key
-
-  if [ -n "${anthropic_api_key}" ]; then
-    ANTHROPIC_API_KEY="${anthropic_api_key}"
-  fi
-
-  echo
-}
-
 prompt_external_custom_compose_override_file() {
   write_external_custom_compose_override_file_description
   echo
@@ -501,10 +465,6 @@ prompt_external_custom_compose_override_file() {
   echo
 }
 
-prompt_ai_integration() {
-  prompt_anthropic_api_key
-}
-
 prompt_type_sections() {
   if [ "$(type -t interactive_init_type_sections)" != 'function' ]; then return; fi
 
@@ -515,7 +475,6 @@ init_interactive() {
   prompt_project_properties &&
     prompt_ide_tooling &&
     prompt_authentication &&
-    prompt_ai_integration &&
     prompt_external_custom_compose_override_file &&
     prompt_type_sections &&
     write_env_file

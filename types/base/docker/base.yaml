@@ -12,7 +12,6 @@ services:
     container_name: ${INSTANCE_ID}_${PROJECT_NAME:-nideovim}_ide_container
     entrypoint: ${USER_HOME_DIR:-/root}/.bin/ide.entrypoint.sh
     environment:
-      - ANTHROPIC_API_KEY
       - COMPOSE_PROJECT_NAME
       - DOCKER_SOCKET_PATH
       - INSTANCE_ID
@@ -82,11 +81,6 @@ services:
         volume:
           nocopy: false
       - type: volume
-        source: user_claude_code
-        target: ${USER_HOME_DIR:-/root}/.claude
-        volume:
-          nocopy: false
-      - type: volume
         source: workspace
         target: ${USER_HOME_DIR:-/root}/${VOLUME_DIR_NAME:-workspace}
         volume:
@@ -97,5 +91,4 @@ volumes:
   user_npm_cache:
   user_npm_prefix:
   user_ssh_dir:
-  user_claude_code:
   workspace:
