@@ -15,8 +15,9 @@ AMD Strix Halo optimized local AI inference environment (Ryzen AI PRO 395+, 128G
 unified memory).
 
 Features:
-- Vulkan backend with ROCmPFX llama_server and optimized Ollama
+- Vulkan backend with ROCmPFX llama_server and llama_cli build
 - Multiple interfaces: llama_cli, Aider
+- web search tool capabilities
 - RAG support for documents, codebases, and prompt history
 - Hugging Face CLI with persistent model cache
 EOF

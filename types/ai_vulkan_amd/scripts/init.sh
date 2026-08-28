@@ -17,8 +17,11 @@ output_type_section_items() {
 # AI VULKAN AMD SPECIFICS
 ################################################################################
 
-$(write_ollama_port_description | comment)
-OLLAMA_PORT ?= ${OLLAMA_PORT}
+$(write_inference_server_port_description | comment)
+INFERENCE_SERVER_PORT ?= ${INFERENCE_SERVER_PORT}
+
+$(write_rag_server_port_description | comment)
+RAG_SERVER_PORT ?= ${RAG_SERVER_PORT}
 
 EOF
 }
@@ -27,22 +30,14 @@ EOF
 #       account the table of content to be written in the Makefile.env file in
 #       your instance
 interactive_init_type_sections() {
-  prompt_ollama_port_description &&
-    prompt_rocmpfx_server_port_description &&
+  prompt_inference_server_port_description &&
     prompt_rag_server_port_description
 }
 
-write_ollama_port_description() {
-  cat <<EOF
-The port used by ollama.
-default: $(get_default_value_for OLLAMA_PORT)
-EOF
-}
-
-write_rocmpfx_server_port_description() {
+write_inference_server_port_description() {
   cat <<EOF
 The port used by the ROCmPFX build of llama_server.
-default: $(get_default_value_for ROCMPFX_SERVER_PORT)
+default: $(get_default_value_for INFERENCE_SERVER_PORT)
 EOF
 }
 
@@ -53,27 +48,14 @@ default: $(get_default_value_for RAG_SERVER_PORT)
 EOF
 }
 
-prompt_ollama_port_description() {
-  write_ollama_port_description
+prompt_inference_server_port_description() {
+  write_inference_server_port_description
   echo
 
-  read -e -r -p "[${OLLAMA_PORT}]: " ollama_port
+  read -e -r -p "[${INFERENCE_SERVER_PORT}]: " inference_server_port
 
-  if [ -n "${ollama_port}" ]; then
-    OLLAMA_PORT="${ollama_port}"
-  fi
-
-  echo
-}
-
-prompt_rocmpfx_server_port_description() {
-  write_rocmpfx_server_port_description
-  echo
-
-  read -e -r -p "[${ROCMPFX_SERVER_PORT}]: " rocmpfx_server_port
-
-  if [ -n "${rocmpfx_server_port}" ]; then
-    ROCMPFX_SERVER_PORT="${rocmpfx_server_port}"
+  if [ -n "${inference_server_port}" ]; then
+    INFERENCE_SERVER_PORT="${inference_server_port}"
   fi
 
   echo

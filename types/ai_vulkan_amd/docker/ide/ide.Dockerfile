@@ -41,22 +41,7 @@ COPY \
   ${USER_HOME_DIR}/sdk/go1.24.13/ ${USER_HOME_DIR}/sdk/go1.24.13/
 ENV PATH=${USER_HOME_DIR}/sdk/go1.24.13/bin/:${PATH}
 
-FROM install_build_dependencies AS build_ollama
-ARG USER_HOME_DIR=/root
-WORKDIR ${USER_HOME_DIR}
-RUN git clone --depth 1 https://github.com/ollama/ollama.git ollama
-WORKDIR ${USER_HOME_DIR}/ollama
-RUN git submodule update --init --recursive
-RUN cmake -S llama/server -B llama/server/build \
-  -DBUILD_SHARED_LIBS=OFF \
-  -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-  -DGGML_VULKAN=ON \
-  && cmake --build llama/server/build --config Release --parallel "$(nproc)" --target llama-server
-RUN cmake -B build . -DOLLAMA_LLAMA_BACKENDS="vulkan" && \
-  cmake --build build --config Release --parallel "$(nproc)"
-RUN go build -tags full -o ${USER_HOME_DIR}/ollama/dist .
-
-FROM install_build_dependencies AS build_strix_llama_cpp
+FROM install_build_dependencies AS build_rocmpfx_llama_cpp
 ARG USER_HOME_DIR=/root
 WORKDIR ${USER_HOME_DIR}
 RUN git clone --depth 1 https://github.com/charlie12345/ROCmFPX.git ROCmFPX
@@ -95,19 +80,11 @@ RUN groupadd -fg ${RENDER_GROUP_ID} render \
   && groupadd -fg ${VIDEO_GROUP_ID} video
 USER ${USER_NAME}
 COPY \
-  --from=build_ollama \
-  --chown=${USER_NAME}:${USER_NAME} \
-  ${USER_HOME_DIR}/ollama/llama/server/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/llama-server
-COPY \
-  --from=build_ollama \
-  --chown=${USER_NAME}:${USER_NAME} \
-  ${USER_HOME_DIR}/ollama/dist ${USER_HOME_DIR}/.local/bin/ollama
-COPY \
-  --from=build_strix_llama_cpp \
+  --from=build_rocmpfx_llama_cpp \
   --chown=${USER_NAME}:${USER_NAME} \
   ${USER_HOME_DIR}/ROCmFPX/build/bin/llama-server ${USER_HOME_DIR}/.local/bin/ROCmPFX-llama-server
 COPY \
-  --from=build_strix_llama_cpp \
+  --from=build_rocmpfx_llama_cpp \
   --chown=${USER_NAME}:${USER_NAME} \
   ${USER_HOME_DIR}/ROCmFPX/build/bin/llama-cli ${USER_HOME_DIR}/.local/bin/ROCmPFX-llama-cli
 ENV PATH=${USER_HOME_DIR}/.local/bin:${PATH}
