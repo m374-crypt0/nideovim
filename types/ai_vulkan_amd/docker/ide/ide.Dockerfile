@@ -1,4 +1,4 @@
-# hadolint global ignore=DL3008
+# hadolint global ignore=DL3008,DL3066
 # NOTE: As there is an ancestor for this type, a base image is specified here.
 #       Take a look in the build script attached to the build make target to
 #       get more insights.

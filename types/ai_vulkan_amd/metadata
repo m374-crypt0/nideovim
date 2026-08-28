@@ -16,7 +16,7 @@ unified memory).
 
 Features:
 - Vulkan backend with ROCmPFX llama_server and optimized Ollama
-- Multiple interfaces: llama_cli, Aider, OpenWebUI
+- Multiple interfaces: llama_cli, Aider
 - RAG support for documents, codebases, and prompt history
 - Hugging Face CLI with persistent model cache
 EOF
